@@ -13,6 +13,16 @@
 	<button type="button" class="button" onClick="del_end()">del_end</button>
 	<button type="button" class="button" onClick="del_mid()">del_mid</button>
 
+	</br></br>
+
+	<button type="button" class="button" onClick="set_local_storage()">set_local_storage</button>
+	<button type="button" class="button" onClick="get_local_storage()">get_local_storage</button>
+
+	</br></br>
+
+	<button type="button" class="button" onClick="set_session_storage()">set_session_storage</button>
+	<button type="button" class="button" onClick="get_session_storage()">get_session_storage</button>
+	
 	
 	<p>val1: <input class="input" id="val1"></p>
 	<p>val2: <input class="input" id="val2"></p>
@@ -63,7 +73,7 @@
 	    background-color: #4CAF50; /* Green */
 	    border: none;
 	    color: white;
-	    padding: 15px 32px;
+	    padding: 1px 8px;
 	    text-align: center;
 	    text-decoration: none;
 	    display: inline-block;
@@ -71,8 +81,6 @@
 	}
 
 	.input {
-	    
-	    
 	    padding: 15px 32px;
 	    text-align: center;
 	    text-decoration: none;
@@ -80,94 +88,136 @@
 	    font-size: 16px;
 	}
 </style>
-	<script>
-		function Config(){
-			this.get_value = function(name){
-				return document.getElementById(name).value;
-			};
-			
-			this.val1 = this.get_value("val1");
-			this.val2 = this.get_value("val2");
-			this.val3 = this.get_value("val3");
-			this.val4 = this.get_value("val4");
-
-			this.body = "<td>"+this.val1+"</td><td>"+this.val2+"</td><td>"+this.val3+"</td><td>"+this.val4+"</td>";
-
-			this.add_start = function() {
-				var newLine = document.createElement('tr');
-		  		newLine.innerHTML = this.body;
-		  		tbody.insertBefore(newLine, tbody.firstChild);		 
-			}
-
-			this.add_end = function() {
-				var newLine = document.createElement('tr');
-		  		newLine.innerHTML = this.body;
-		  		tbody.appendChild(newLine);		 
-			}
-
-			this.add_mid = function() {
-				var length = document.getElementById("tbody").rows.length;
-				var index = Math.round(length/2);
-
-				var newLine = document.createElement('tr');
-		  		newLine.innerHTML = this.body;
-		  		tbody.insertBefore(newLine, tbody.children[index]);		
-			}
-
-			// добавить проверку на существоание строки перед удалением
-			this.del_start = function() {
-				var elem = tbody.children[0];
-  				elem.remove();
-			}
-
-			this.del_end = function() {
-				var length = document.getElementById("tbody").rows.length;
-
-				var elem = tbody.children[length-1];
-  				elem.remove();
-			}
-
-			this.del_mid = function() {
-				var length = document.getElementById("tbody").rows.length;
-
-				var index = Math.round(length/2) - 1;
-				var elem = tbody.children[index];
-  				elem.remove();
-			}
-		}
-
-		function add_start() {
-			  var config = new Config();
-			  config.add_start();
-		}
-
-		function add_end() {
-			  var config = new Config();
-			  config.add_end();
-		}
-
-		function add_mid () {
-			var config = new Config();
-			  config.add_mid();
-		}
-
-
-		function del_start() {
-			  var config = new Config();
-			  config.del_start();
-		}
-
-		function del_end() {
-			  var config = new Config();
-			  config.del_end();
-		}
-
-		function del_mid () {
-			var config = new Config();
-			  config.del_mid();
-		}
-
+<script>
+	function Config(){
+		this.tag = "tbody";
 		
-	  
-	</script>
+		this.target = document.getElementById(this.tag);
+
+		this.get_inner_html = function(name){
+			return document.getElementById(name).innerHTML;
+		};
+
+		this.get_value = function(name){
+			return document.getElementById(name).value;
+		};
+		
+		this.val1 = this.get_value("val1");
+		this.val2 = this.get_value("val2");
+		this.val3 = this.get_value("val3");
+		this.val4 = this.get_value("val4");
+
+		this.body = "<td>"+this.val1+"</td><td>"+this.val2+"</td><td>"+this.val3+"</td><td>"+this.val4+"</td>";
+
+		this.add_start = function() {
+			var newLine = document.createElement('tr');
+	  		newLine.innerHTML = this.body;
+	  		tbody.insertBefore(newLine, tbody.firstChild);		 
+		}
+
+		this.add_end = function() {
+			var newLine = document.createElement('tr');
+	  		newLine.innerHTML = this.body;
+	  		tbody.appendChild(newLine);		 
+		}
+
+		this.add_mid = function() {
+			var length = this.target.rows.length;
+			var index = Math.round(length/2);
+
+			var newLine = document.createElement('tr');
+	  		newLine.innerHTML = this.body;
+	  		tbody.insertBefore(newLine, tbody.children[index]);		
+		}
+
+		// добавить проверку на существоание строки перед удалением
+		this.del_start = function() {
+			var elem = tbody.children[0];
+				elem.remove();
+		}
+
+		this.del_end = function() {
+			var length = this.target.rows.length;
+
+			var elem = tbody.children[length-1];
+				elem.remove();
+		}
+
+		this.del_mid = function() {
+			var length = this.target.rows.length;
+
+			var index = Math.round(length/2) - 1;
+			var elem = tbody.children[index];
+				elem.remove();
+		}
+
+		this.set_local_storage = function() {
+			localStorage.setItem(this.tag, this.get_inner_html(this.tag));
+		}
+
+		this.get_local_storage = function() {
+			this.target.innerHTML = localStorage.getItem(this.tag); 
+		}
+
+		this.set_session_storage = function() {
+			sessionStorage.setItem(this.tag, this.get_inner_html(this.tag));
+		}
+
+		this.get_session_storage = function() {
+			this.target.innerHTML = sessionStorage.getItem(this.tag);
+		}
+	}
+
+	function add_start() {
+		  var config = new Config();
+		  config.add_start();
+	}
+
+	function add_end() {
+		  var config = new Config();
+		  config.add_end();
+	}
+
+	function add_mid () {
+		var config = new Config();
+		config.add_mid();
+	}
+
+
+	function del_start() {
+		  var config = new Config();
+		  config.del_start();
+	}
+
+	function del_end() {
+		  var config = new Config();
+		  config.del_end();
+	}
+
+	function del_mid () {
+		var config = new Config();
+		  config.del_mid();
+	} 
+
+	function set_local_storage() {
+		var config = new Config();
+		config.set_local_storage();
+	}
+
+	function get_local_storage() {
+		var config = new Config();
+		config.get_local_storage();
+	}
+
+	function set_session_storage() {
+		var config = new Config();
+		config.set_session_storage();
+	}
+
+	function get_session_storage() {
+		var config = new Config();
+		config.get_session_storage();
+	}
+
+</script>
 </html>
