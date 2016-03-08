@@ -3,7 +3,7 @@
 	<meta charset="UTF-8">
 	<title></title>
 </head>
-<body>
+<body onload="onReady()">
 	
 	<button type="button" class="button" onClick="add_start()">add_start</button>
 	<button type="button" class="button" onClick="add_end()">add_end</button>
@@ -40,6 +40,12 @@
 		  </tr>
 		 </thead>
 		<tbody id="tbody">
+			<tr id="rowTemplate">
+			   <td></td>
+			   <td></td>
+			   <td></td>
+			   <td></td>
+		   </tr>
 		</tbody>
 	</table>
 
@@ -89,14 +95,21 @@
 	}
 </style>
 <script>
+	var rNew;
+			   
+   	function onReady()
+    {
+       rNew = document.getElementById("rowTemplate");
+       tbody.removeChild(tbody.rows[0]);
+   	}
+
 	function Config(){
 		this.tag = "tbody";
+		this.target = document.getElementById(this.tag);
 
 		this.clear = function(){
 			tbody.innerHTML = "";
 		}
-
-		this.target = document.getElementById(this.tag);
 
 		this.get_inner_html = function(name){
 			return document.getElementById(name).innerHTML;
@@ -105,72 +118,121 @@
 		this.get_value = function(name){
 			return document.getElementById(name).value;
 		};
-		
-		this.val1 = this.get_value("val1");
-		this.val2 = this.get_value("val2");
-		this.val3 = this.get_value("val3");
-		this.val4 = this.get_value("val4");
 
-		this.body = "<td>"+this.val1+"</td><td>"+this.val2+"</td><td>"+this.val3+"</td><td>"+this.val4+"</td>";
+		this.getReqJSON = function() {
+			json =[];
+			elements = document.getElementsByClassName("input");
+			for(i=0; i<elements.length; i++) {
+			  json.push(JSON.parse("{"+"\""+elements[i].id+"\""+":"+"\""+elements[i].value+"\""+"}"));
+			}
+			return JSON.stringify(json);
+		}
+
+		this.setNewRow = function(jsonData) {
+			row = rNew.cloneNode(true);
+
+			row.cells[0].innerHTML = jsonData[0].val1;
+			row.cells[1].innerHTML = jsonData[1].val2;
+			row.cells[2].innerHTML = jsonData[2].val3;
+			row.cells[3].innerHTML = jsonData[3].val4;
+			
+			return row;
+		}
+
+		this.setNewRowStorage = function(jsonData) {
+			row = rNew.cloneNode(true);
+
+			row.cells[0].innerHTML = jsonData.val1;
+			row.cells[1].innerHTML = jsonData.val2;
+			row.cells[2].innerHTML = jsonData.val3;
+			row.cells[3].innerHTML = jsonData.val4;
+			
+			return row;
+		}
 
 		this.add_start = function() {
-			var newLine = document.createElement('tr');
-	  		newLine.innerHTML = this.body;
-	  		tbody.insertBefore(newLine, tbody.firstChild);		 
+			jsonData = JSON.parse(this.getReqJSON());
+			row = this.setNewRow(jsonData);
+			this.target.insertBefore(row, this.target.rows[0]);
 		}
 
 		this.add_end = function() {
-			var newLine = document.createElement('tr');
-	  		newLine.innerHTML = this.body;
-	  		tbody.appendChild(newLine);		 
+			jsonData = JSON.parse(this.getReqJSON());
+			row = this.setNewRow(jsonData);
+			this.target.appendChild(row); 	
 		}
 
 		this.add_mid = function() {
-			var length = this.target.rows.length;
-			var index = Math.round(length/2);
-
-			var newLine = document.createElement('tr');
-	  		newLine.innerHTML = this.body;
-	  		tbody.insertBefore(newLine, tbody.children[index]);		
+			index = Math.round(this.target.rows.length/2);
+			jsonData = JSON.parse(this.getReqJSON());
+			row = this.setNewRow(jsonData);
+			this.target.insertBefore(row, this.target.rows[index]);
 		}
 
-		// добавить проверку на существоание строки перед удалением
+		
 		this.del_start = function() {
-			var elem = tbody.children[0];
-			elem.remove();
+			this.target.removeChild(this.target.rows[0]);
 		}
 
 		this.del_end = function() {
-			var length = this.target.rows.length;
-
-			var elem = tbody.children[length-1];
-			elem.remove();
+			this.target.removeChild(this.target.rows[this.target.rows.length - 1 ]);
 		}
 
 		this.del_mid = function() {
-			var length = this.target.rows.length;
-
-			var index = Math.round(length/2) - 1;
-			var elem = tbody.children[index];
-			elem.remove();
+			index = Math.round(this.target.rows.length/2) - 1;
+			this.target.removeChild(this.target.rows[0]);
 		}
 
 		this.set_local_storage = function() {
-			localStorage.setItem(this.tag, this.get_inner_html(this.tag));
+			json =[];
+	
+			for(i = 0; i < this.target.rows.length; i++) {
+				data = Object();
+                data.val1 = this.target.rows[i].cells[0].innerHTML;
+                data.val2 = this.target.rows[i].cells[1].innerHTML;
+                data.val3 = this.target.rows[i].cells[2].innerHTML;
+                data.val4 = this.target.rows[i].cells[3].innerHTML;
+
+                json.push(data);
+			}
+
+			localStorage.setItem(this.tag, JSON.stringify(json));
 		}
 
 		this.get_local_storage = function() {
 			this.clear();
-			this.target.innerHTML = localStorage.getItem(this.tag); 
+			ls   = localStorage.getItem(this.tag);
+            jsonData = JSON.parse(ls);
+            
+            for(i=0;i<jsonData.length;i++){
+            	this.target.appendChild(this.setNewRowStorage(jsonData[i])); 	
+            }
 		}
 
 		this.set_session_storage = function() {
-			sessionStorage.setItem(this.tag, this.get_inner_html(this.tag));
+			json =[];
+	
+			for(i = 0; i < this.target.rows.length; i++) {
+				data = Object();
+                data.val1 = this.target.rows[i].cells[0].innerHTML;
+                data.val2 = this.target.rows[i].cells[1].innerHTML;
+                data.val3 = this.target.rows[i].cells[2].innerHTML;
+                data.val4 = this.target.rows[i].cells[3].innerHTML;
+
+                json.push(data);
+			}
+			console.log(JSON.stringify(json));
+			sessionStorage.setItem(this.tag, JSON.stringify(json));
 		}
 
 		this.get_session_storage = function() {
 			this.clear();
-			this.target.innerHTML = sessionStorage.getItem(this.tag);
+			ss   = sessionStorage.getItem(this.tag);
+            jsonData = JSON.parse(ss);
+            
+            for(i=0;i<jsonData.length;i++){
+            	this.target.appendChild(this.setNewRowStorage(jsonData[i])); 	
+            }
 		}
 	}
 
