@@ -1,0 +1,173 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+</head>
+<body>
+	
+	<button type="button" class="button" onClick="add_start()">add_start</button>
+	<button type="button" class="button" onClick="add_end()">add_end</button>
+	<button type="button" class="button" onClick="add_mid()">add_mid</button>
+
+	<button type="button" class="button" onClick="del_start()">del_start</button>
+	<button type="button" class="button" onClick="del_end()">del_end</button>
+	<button type="button" class="button" onClick="del_mid()">del_mid</button>
+
+	
+	<p>val1: <input class="input" id="val1"></p>
+	<p>val2: <input class="input" id="val2"></p>
+	<p>val3: <input class="input" id="val3"></p>
+	<p>val4: <input class="input" id="val4"></p>
+
+
+	<table border="1" style="width:100%" id="tbl">
+		 <thead>
+		  <tr>
+		     <th>val1</th>
+		     <th>val2</th>
+		     <th>val3</th>
+		     <th>val4</th>
+		  </tr>
+		 </thead>
+		<tbody id="tbody">
+		</tbody>
+	</table>
+
+
+</body>
+<style>
+	html, body {
+	    font-family: Verdana,sans-serif;
+	    font-size: 15px;
+	    line-height: 1.5;
+	}
+
+	table {
+	    border-collapse: collapse;
+	    width: 100%;
+	}
+
+	th, td {
+	    text-align: left;
+	    padding: 8px;
+	}
+
+	tr:nth-child(even){background-color: #f2f2f2}
+
+	th {
+	    background-color: #4CAF50;
+	    color: white;
+	}
+
+	.button {
+	    background-color: #4CAF50; /* Green */
+	    border: none;
+	    color: white;
+	    padding: 15px 32px;
+	    text-align: center;
+	    text-decoration: none;
+	    display: inline-block;
+	    font-size: 16px;
+	}
+
+	.input {
+	    
+	    
+	    padding: 15px 32px;
+	    text-align: center;
+	    text-decoration: none;
+	    display: inline-block;
+	    font-size: 16px;
+	}
+</style>
+	<script>
+		function Config(){
+			this.get_value = function(name){
+				return document.getElementById(name).value;
+			};
+			
+			this.val1 = this.get_value("val1");
+			this.val2 = this.get_value("val2");
+			this.val3 = this.get_value("val3");
+			this.val4 = this.get_value("val4");
+
+			this.body = "<td>"+this.val1+"</td><td>"+this.val2+"</td><td>"+this.val3+"</td><td>"+this.val4+"</td>";
+
+			this.add_start = function() {
+				var newLine = document.createElement('tr');
+		  		newLine.innerHTML = this.body;
+		  		tbody.insertBefore(newLine, tbody.firstChild);		 
+			}
+
+			this.add_end = function() {
+				var newLine = document.createElement('tr');
+		  		newLine.innerHTML = this.body;
+		  		tbody.appendChild(newLine);		 
+			}
+
+			this.add_mid = function() {
+				var length = document.getElementById("tbody").rows.length;
+				var index = Math.round(length/2);
+
+				var newLine = document.createElement('tr');
+		  		newLine.innerHTML = this.body;
+		  		tbody.insertBefore(newLine, tbody.children[index]);		
+			}
+
+			// добавить проверку на существоание строки перед удалением
+			this.del_start = function() {
+				var elem = tbody.children[0];
+  				elem.remove();
+			}
+
+			this.del_end = function() {
+				var length = document.getElementById("tbody").rows.length;
+
+				var elem = tbody.children[length-1];
+  				elem.remove();
+			}
+
+			this.del_mid = function() {
+				var length = document.getElementById("tbody").rows.length;
+
+				var index = Math.round(length/2) - 1;
+				var elem = tbody.children[index];
+  				elem.remove();
+			}
+		}
+
+		function add_start() {
+			  var config = new Config();
+			  config.add_start();
+		}
+
+		function add_end() {
+			  var config = new Config();
+			  config.add_end();
+		}
+
+		function add_mid () {
+			var config = new Config();
+			  config.add_mid();
+		}
+
+
+		function del_start() {
+			  var config = new Config();
+			  config.del_start();
+		}
+
+		function del_end() {
+			  var config = new Config();
+			  config.del_end();
+		}
+
+		function del_mid () {
+			var config = new Config();
+			  config.del_mid();
+		}
+
+		
+	  
+	</script>
+</html>
